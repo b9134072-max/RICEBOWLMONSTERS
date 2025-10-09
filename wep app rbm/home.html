@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rice Bowl Monster - Beranda</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Variabel Warna Dasar */
+    :root {
+      --bg: #4C2A85;
+      --card: #ffffff;
+      --text: #374151;
+      --muted: #6b7280;
+      --primary: #4C2A85;
+      --primary-text: #ffffff;
+      --border: #e5e7eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    
+    img { max-width: 100%; display: block; }
+    
+    /* === DIUBAH: GAYA HEADER TRANSPARAN === */
+    .app-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      
+      /* Latar belakang dibuat transparan */
+      background-color: transparent;
+      box-shadow: none; /* Bayangan dihilangkan */
+    }
+    
+    /* Menambahkan bayangan pada teks agar mudah dibaca di atas gambar */
+    .brand-name, .location-link, .notification-btn {
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    /* Sisa gaya header lainnya */
+    .app-header .logo {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+    }
+    .app-header .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .brand-stack {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-name {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--primary-text);
+      line-height: 1.2;
+    }
+    .location-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+    .location-icon {
+        font-size: 16px;
+    }
+    .location-link {
+      color: var(--primary-text);
+      font-weight: 600;
+      text-decoration: underline;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+    .notification-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--primary-text);
+      margin-left: auto;
+    }
+
+    /* === DIUBAH: KONTEN UTAMA === */
+    .content {
+      padding: 0; /* Padding dihilangkan agar gambar menempel ke atas */
+    }
+    .promo-section { 
+      margin-bottom: 24px;
+      /* DIUBAH: Hapus margin atas agar menempel */
+    }
+    .promo-slider { 
+      display: flex; 
+      overflow-x: auto; 
+      scroll-snap-type: x mandatory; 
+      gap: 0; /* DIUBAH: Jarak antar gambar promo dihilangkan */
+      scrollbar-width: none; 
+      scroll-behavior: smooth; /* DIUBAH: Transisi smooth */
+    }
+    .promo-slider::-webkit-scrollbar { display: none; }
+    .promo-item { 
+      flex: 0 0 100%; /* DIUBAH: Lebar promo jadi 100% */
+      scroll-snap-align: center; 
+      overflow: hidden;
+      position: relative; /* Diperlukan untuk lapisan gradien */
+      border-radius: 0 0 16px 16px; /* DIUBAH: Lengkungan hanya di bawah */
+    }
+    
+    /* Menambahkan lapisan gradien gelap di atas gambar promo */
+    .promo-item::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 150px; /* Tinggi gradien disesuaikan */
+      background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+      z-index: 1;
+    }
+    
+    .promo-item img { 
+      width: 100%; 
+      height: 250px; /* DIUBAH: Gambar promo dibuat lebih tinggi */
+      object-fit: cover; 
+      display: block; 
+      border-radius: 0 0 16px 16px; /* DIUBAH: Lengkungan hanya di bawah gambar */
+    }
+    
+    /* Menu icons diberi padding agar tidak terlalu dekat dengan promo */
+    .menu-icons { 
+      display: grid; 
+      grid-template-columns: repeat(5, 1fr); 
+      gap: 16px; 
+      text-align: center;
+      padding: 0 16px; /* DIUBAH: Diberi padding horizontal */
+      position: relative;
+      background: var(--bg); /* DIUBAH: Kembali ke warna ungu asli */
+      margin-top: -10px; /* DIUBAH: Overlap diperkecil */
+      border-radius: 16px 16px 0 0; /* DIUBAH: Lengkungan diperkecil */
+      padding-top: 24px; /* DIUBAH: Padding atas dikurangi */
+    }
+    
+    /* DIUBAH: Menambahkan efek wave curve yang lebih kecil */
+    .menu-icons::before {
+      content: '';
+      position: absolute;
+      top: -10px; /* DIUBAH: Overlap diperkecil */
+      left: 0;
+      right: 0;
+      height: 20px; /* DIUBAH: Tinggi wave diperkecil */
+      background: var(--bg); /* DIUBAH: Warna ungu asli */
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      transform: scaleX(1.1); /* DIUBAH: Scale diperkecil */
+    }
+    .menu-icon { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; }
+    .menu-emoji { width: 56px; height: 56px; border-radius: 16px; background-color: var(--card); display: grid; place-items: center; font-size: 28px; box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
+    .menu-icon span { font-size: 12px; font-weight: 600; color: var(--primary-text); } /* DIUBAH: Warna teks putih untuk background ungu */
+    
+    /* DIUBAH: Styling untuk kotak profil user */
+    .user-profile-section {
+      padding: 0 16px;
+      margin-bottom: 20px;
+    }
+    
+    .user-profile-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 12px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-top: -10px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .profile-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .profile-left {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    
+    .profile-right {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    
+    .welcome-text {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .hello-text {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text);
+    }
+    
+    .user-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .points-display {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .points-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    
+    .points-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid #d1d5db;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .exchange-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, var(--primary), #5a2d9a);
+      color: var(--primary-text);
+      border: none;
+      border-radius: 20px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(76, 42, 133, 0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .exchange-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .exchange-btn:hover {
+      background: linear-gradient(135deg, #3c216b, #4a1f6b);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(76, 42, 133, 0.4);
+    }
+    
+    .exchange-btn:hover::before {
+      left: 100%;
+    }
+    
+    .exchange-btn:active {
+      transform: translateY(-1px);
+    }
+    
+    .exchange-icon {
+      font-size: 18px;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+    }
+    
+    .exchange-text {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    
+    /* DIUBAH: Styling untuk kotak voucher kecil memanjang */
+    .voucher-section {
+      padding: 0 16px;
+      margin-bottom: 20px;
+    }
+    
+    .voucher-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 8px 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      width: 100%;
+    }
+    
+    .voucher-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .voucher-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      flex: 1;
+      padding: 6px 8px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+    
+    .voucher-item:hover {
+      background: #f8f9fa;
+      transform: translateY(-1px);
+    }
+    
+    .voucher-icon {
+      font-size: 16px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .voucher-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    
+    .voucher-divider {
+      width: 1px;
+      height: 24px;
+      background: #e5e7eb;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="logo">
+      <img src="logo-rbm.png" alt="Rice Bowl Monster Logo">
+    </div>
+    <div class="brand-stack">
+      <h1 class="brand-name">Rice Bowl Monster</h1>
+      <div class="location-row">
+        <span class="location-icon">📍</span>
+        <a href="https://www.google.com/maps/search/?api=1&query=Rice+Bowl+Monsters+Surabaya" class="location-link" target="_blank">
+          Jl. Kemenangan No. 1, Surabaya
+        </a>
+      </div>
+    </div>
+    <button class="notification-btn" id="notificationBtn" aria-label="Notifikasi">
+      🔔
+    </button>
+  </header>
+
+  <main class="content">
+    <section class="promo-section">
+      <div class="promo-slider" id="promoSlider">
+        <div class="promo-item"><img src="latar-utama.jpg" alt="Latar Utama 1"></div>
+        <div class="promo-item"><img src="https://images.unsplash.com/photo-1551218808-94e220e084d2?q=80&w=1600&auto=format&fit=crop" alt="Latar Utama 2"></div>
+        <div class="promo-item"><img src="https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1600&auto=format&fit=crop" alt="Latar Utama 3"></div>
+        <div class="promo-item"><img src="https://images.unsplash.com/photo-1604908176997-4315c979f3f1?q=80&w=1600&auto=format&fit=crop" alt="Latar Utama 4"></div>
+        <div class="promo-item"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?q=80&w=1600&auto=format&fit=crop" alt="Latar Utama 5"></div>
+      </div>
+    </section>
+
+    <!-- DIUBAH: Kotak profil user dengan poin -->
+    <section class="user-profile-section">
+      <div class="user-profile-card">
+        <div class="profile-content">
+          <div class="profile-left">
+            <div class="welcome-text">
+              <span class="hello-text">Hello, </span>
+              <span class="user-name" id="userName">Loading...</span>
+            </div>
+            <div class="points-display">
+              <span class="points-label">Poin Anda:</span>
+              <span class="points-value" id="userPoints">0</span>
+            </div>
+          </div>
+          <div class="profile-right">
+            <button class="exchange-btn" id="exchangeBtn">
+              <span class="exchange-icon">🎁</span>
+              <span class="exchange-text">Tukar Poin</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIUBAH: Kotak kecil memanjang untuk Mercendes dan Voucher -->
+    <section class="voucher-section">
+      <div class="voucher-card">
+        <div class="voucher-content">
+          <a href="#" class="voucher-item" aria-label="Mercendes">
+            <div class="voucher-icon">🏆</div>
+            <span class="voucher-title">Mercendes</span>
+          </a>
+          <div class="voucher-divider"></div>
+          <a href="#" class="voucher-item" aria-label="Voucher">
+            <div class="voucher-icon">🎫</div>
+            <span class="voucher-title">Voucher</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="menu-icons">
+      <a class="menu-icon" href="#" aria-label="Rice Bowl"><div class="menu-emoji">🍚</div><span>Rice Bowl</span></a>
+      <a class="menu-icon" href="#" aria-label="Mie"><div class="menu-emoji">🍜</div><span>Mie</span></a>
+      <a class="menu-icon" href="#" aria-label="Minuman"><div class="menu-emoji">🥤</div><span>Minuman</span></a>
+      <a class="menu-icon" href="#" aria-label="Es Vampur"><div class="menu-emoji">🧊</div><span>Es Vampur</span></a>
+      <a class="menu-icon" href="#" aria-label="Gorengan"><div class="menu-emoji">🍤</div><span>Gorengan</span></a>
+    </section>
+  </main>
+
+  <script>
+    // Auto-slide untuk promo slider
+    function initPromoSlider() {
+      const slider = document.getElementById('promoSlider');
+      if (!slider) return;
+      
+      let currentSlide = 0;
+      const slides = slider.children;
+      const totalSlides = slides.length;
+      
+      function nextSlide() {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        slider.scrollTo({
+          left: currentSlide * slider.offsetWidth,
+          behavior: 'smooth'
+        });
+      }
+      
+      // Auto-slide setiap 3 detik
+      setInterval(nextSlide, 3000);
+    }
+    
+    // DIUBAH: Fungsi untuk mengambil data dari Google Sheets
+    async function loadUserData() {
+      try {
+        // Ganti dengan URL Google Sheets Anda (format CSV)
+        const sheetsUrl = 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/export?format=csv';
+        
+        // Untuk demo, menggunakan data statis
+        // Ganti dengan fetch ke Google Sheets yang sebenarnya
+        const response = await fetch(sheetsUrl);
+        const csvData = await response.text();
+        
+        // Parse CSV data
+        const lines = csvData.split('\n');
+        const headers = lines[0].split(',');
+        
+        // Cari kolom nama dan poin (kolom C)
+        const nameIndex = headers.findIndex(h => h.toLowerCase().includes('nama') || h.toLowerCase().includes('name'));
+        const pointsIndex = 2; // Kolom C (index 2)
+        
+        if (lines.length > 1) {
+          const userData = lines[1].split(',');
+          const userName = userData[nameIndex] || 'User';
+          const userPoints = userData[pointsIndex] || '0';
+          
+          // Update UI
+          document.getElementById('userName').textContent = userName;
+          document.getElementById('userPoints').textContent = userPoints;
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        // Fallback data untuk demo
+        document.getElementById('userName').textContent = 'Demo User';
+        document.getElementById('userPoints').textContent = '1,250';
+      }
+    }
+    
+    // DIUBAH: Fungsi untuk menangani tukar poin
+    function initExchangeButton() {
+      const exchangeBtn = document.getElementById('exchangeBtn');
+      if (!exchangeBtn) return;
+      
+      exchangeBtn.addEventListener('click', function() {
+        // Tampilkan modal atau navigasi ke halaman tukar poin
+        alert('Fitur Tukar Poin akan segera tersedia!\n\nAnda dapat menukar poin untuk:\n• Voucher makanan\n• Diskon khusus\n• Hadiah menarik');
+        
+        // Atau redirect ke halaman tukar poin
+        // window.location.href = 'exchange-points.html';
+      });
+    }
+    
+    // DIUBAH: Fungsi untuk menangani kotak voucher
+    function initVoucherMenu() {
+      const mercendesBtn = document.querySelector('[aria-label="Mercendes"]');
+      const voucherBtn = document.querySelector('[aria-label="Voucher"]');
+      
+      if (merchendesBtn) {
+        mercendesBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          alert('Menu Mercendes akan segera tersedia!\n\nNikmati berbagai pilihan menu premium dari Mercendes.');
+        });
+      }
+      
+      if (voucherBtn) {
+        voucherBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          alert('Voucher akan segera tersedia!\n\nTukar poin Anda untuk mendapatkan voucher diskon menarik!');
+        });
+      }
+    }
+    
+    // Inisialisasi ketika halaman dimuat
+    function init() {
+      initPromoSlider();
+      loadUserData();
+      initExchangeButton();
+      initVoucherMenu();
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
