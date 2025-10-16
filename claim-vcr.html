@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Klaim VCR - Rice Bowl Monster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Styling dasar agar terlihat rapi */
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .app-header {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      background-color: #6a1b9a; /* Warna ungu yang lebih menarik */
+      color: white;
+    }
+    .back-btn {
+      color: white;
+      text-decoration: none;
+      font-size: 24px;
+      margin-right: 16px;
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0;
+    }
+    .content {
+      padding: 24px;
+    }
+    .qr-scanner-container {
+      text-align: center;
+    }
+    .qr-scanner-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+    .qr-scanner-subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-top: 0;
+      margin-bottom: 24px;
+    }
+    .qr-scanner-box {
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+      max-width: 300px;
+      aspect-ratio: 1 / 1;
+      margin: 0 auto;
+      background: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .qr-scanner-placeholder {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      color: #888;
+    }
+    .qr-scanner-placeholder p:first-child {
+      font-size: 48px;
+      margin: 0;
+    }
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .btn-primary {
+      background-color: #6a1b9a;
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: #4a148c;
+    }
+    .btn-secondary {
+      background-color: #f1f1f1;
+      color: #333;
+      border: 1px solid #ddd;
+    }
+    .btn-secondary:hover {
+      background-color: #e6e6e6;
+    }
+    #qr-input-file {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <a href="home.html" class="back-btn" aria-label="Kembali">❮</a>
+      <h1 class="page-title">Klaim Voucher Baru</h1>
+    </header>
+
+    <main class="content">
+      <section class="qr-scanner-container">
+        <h3 class="qr-scanner-title">Scan QR Code Voucher</h3>
+        <p class="qr-scanner-subtitle">Arahkan kamera ke QR code atau unggah dari file.</p>
+        
+        <div id="reader" class="qr-scanner-box">
+          <div class="qr-scanner-placeholder">
+            <p>📷</p>
+            <p>Kamera akan muncul di sini</p>
+          </div>
+        </div>
+        
+        <div class="button-container">
+          <button id="start-scan-btn" class="btn btn-primary">
+            📷 Mulai Scan
+          </button>
+          <button id="upload-qr-btn" class="btn btn-secondary">
+            📁 Unggah dari File
+          </button>
+        </div>
+        
+        <input type="file" id="qr-input-file" accept="image/*">
+      </section>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      const startButton = document.getElementById('start-scan-btn');
+      const uploadButton = document.getElementById('upload-qr-btn');
+      const qrFileInput = document.getElementById('qr-input-file');
+      const readerDiv = document.getElementById('reader');
+      const buttonContainer = document.querySelector('.button-container');
+      
+      let html5QrCode;
+
+      /**
+       * Fungsi ini dijalankan ketika QR code berhasil dipindai.
+       * @param {string} decodedText - Teks hasil dekode dari QR code.
+       * @param {object} decodedResult - Objek detail dari hasil scan.
+       */
+      function onScanSuccess(decodedText, decodedResult) {
+        console.log(`Code matched = ${decodedText}`, decodedResult);
+        
+        // Hentikan pemindai kamera jika sedang berjalan
+        if (html5QrCode && html5QrCode.isScanning) {
+          html5QrCode.stop().catch(err => {
+            console.error("Gagal menghentikan scanner:", err);
+          });
+        }
+        
+        try {
+          const newReward = JSON.parse(decodedText);
+          
+          // Validasi sederhana: pastikan data punya id, nama, dan type
+          if (newReward.id && newReward.nama && newReward.type) {
+            
+            // Ambil data lama dari localStorage
+            let unclaimed = JSON.parse(localStorage.getItem('rbm_unclaimed_rewards') || '[]');
+            
+            // Tambahkan reward baru ke dalam array
+            unclaimed.push(newReward);
+            
+            // Simpan kembali array yang sudah diperbarui ke localStorage
+            localStorage.setItem('rbm_unclaimed_rewards', JSON.stringify(unclaimed));
+            
+            alert(`Selamat! Anda mendapatkan "${newReward.nama}". Cek di halaman Voucher Klaim.`);
+            
+            // Arahkan pengguna ke halaman klaim
+            window.location.href = 'klaim.html';
+            
+          } else {
+            alert('Format QR Code tidak valid.');
+            window.location.reload(); // Muat ulang halaman untuk mencoba lagi
+          }
+        } catch (error) {
+          console.error("Gagal memproses data QR:", error);
+          alert('Gagal memproses data QR Code. Pastikan formatnya benar.');
+          window.location.reload(); // Muat ulang halaman untuk mencoba lagi
+        }
+      }
+
+      /**
+       * Fungsi ini dijalankan jika scan gagal. Dibiarkan kosong agar tidak mengganggu pengguna.
+       */
+      function onScanFailure(error) {
+        // Cukup abaikan, tidak perlu menampilkan error terus-menerus
+      }
+      
+      // Event listener untuk tombol 'Mulai Scan'
+      startButton.addEventListener('click', () => {
+        // Sembunyikan container tombol
+        buttonContainer.style.display = 'none';
+
+        // Inisialisasi scanner
+        html5QrCode = new Html5Qrcode("reader");
+        
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+        
+        // Mulai proses scanning
+        html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
+          .catch(err => {
+            alert("Gagal memulai kamera. Pastikan Anda memberikan izin akses kamera.");
+            console.error("Tidak dapat memulai scanner", err);
+            // Tampilkan kembali tombol jika gagal
+            buttonContainer.style.display = 'flex';
+          });
+      });
+
+      // Event listener untuk tombol 'Unggah dari File'
+      uploadButton.addEventListener('click', () => {
+        qrFileInput.click(); // Memicu klik pada input file yang tersembunyi
+      });
+
+      // Event listener untuk input file
+      qrFileInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) {
+          return;
+        }
+
+        buttonContainer.style.display = 'none';
+        readerDiv.innerHTML = '<p style="color: #666; font-size: 16px;">Menganalisis gambar...</p>';
+        
+        const fileScanner = new Html5Qrcode("reader", { verbose: false });
+
+        fileScanner.scanFile(file, true) // Parameter kedua (showImage) tidak begitu penting di sini
+          .then(onScanSuccess)
+          .catch(err => {
+            alert("Gagal memindai QR Code dari file. Pastikan gambar jelas dan merupakan QR code yang valid.");
+            console.error(`Error scanning file. ${err}`);
+            window.location.reload(); // Muat ulang halaman untuk mencoba lagi
+          });
+      });
+
+    });
+  </script>
+</body>
+</html>

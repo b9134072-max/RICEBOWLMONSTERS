@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Point & Klaim VCR - Rice Bowl Monster</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header simple">
+      <h1 class="page-title">Input Point & Klaim VCR</h1>
+    </header>
+
+    <main class="content">
+      <section class="points-summary">
+        <div class="points-label">Selamat Datang</div>
+        <div class="points-value" id="user-name">User</div>
+        <p style="margin-top: 8px; opacity: 0.9; font-size: 14px;">
+          Pilih fitur yang ingin Anda gunakan
+        </p>
+      </section>
+
+      <section class="feature-grid">
+        <a href="input-point.html" class="feature-card">
+          <div class="feature-icon">💰</div>
+          <h3 class="feature-title">Input Point</h3>
+          <p class="feature-description">
+            Input nominal transaksi untuk menambahkan point ke customer
+          </p>
+          <div class="feature-arrow">→</div>
+        </a>
+
+        <a href="claim-vcr.html" class="feature-card">
+          <div class="feature-icon">🎫</div>
+          <h3 class="feature-title">Klaim VCR</h3>
+          <p class="feature-description">
+            Scan QR code voucher untuk mengklaim hadiah
+          </p>
+          <div class="feature-arrow">→</div>
+        </a>
+      </section>
+
+      <section class="card">
+        <h3 class="card-title">Cara Menggunakan</h3>
+        <div class="instructions">
+          <div class="instruction-item">
+            <span class="instruction-number">1</span>
+            <span>Pilih fitur yang ingin digunakan (Input Point atau Klaim VCR)</span>
+          </div>
+          <div class="instruction-item">
+            <span class="instruction-number">2</span>
+            <span>Izinkan akses kamera untuk scan QR code</span>
+          </div>
+          <div class="instruction-item">
+            <span class="instruction-number">3</span>
+            <span>Arahkan kamera ke QR code yang valid</span>
+          </div>
+          <div class="instruction-item">
+            <span class="instruction-number">4</span>
+            <span>Konfirmasi aksi yang ingin dilakukan</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <a href="login.html" class="btn btn-secondary" style="width: 100%; text-align: center; text-decoration: none;">
+          🔐 Logout
+        </a>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+  
+  <style>
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .feature-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      border-color: #4C2A85;
+    }
+    
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    .feature-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    
+    .feature-description {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    
+    .feature-arrow {
+      font-size: 24px;
+      color: #4C2A85;
+      font-weight: bold;
+    }
+    
+    /* CSS untuk Statistik yang sudah dihapus tidak lagi diperlukan */
+    /* .stats-grid, .stat-item, .stat-value, .stat-label bisa dihapus jika styles.css terpisah */
+    
+    .instructions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .instruction-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+    }
+    
+    .instruction-number {
+      background: #4C2A85;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+  </style>
+
+  <script>
+    // Load user data
+    function loadUserData() {
+      const userData = JSON.parse(localStorage.getItem('rbm_user') || '{}');
+      
+      // Update user name
+      const userNameEl = document.getElementById('user-name');
+      if (userNameEl) {
+        userNameEl.textContent = userData.nama || 'User';
+      }
+      
+      // Bagian untuk update statistik poin dan voucher sudah dihapus
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if user is logged in
+      const userData = JSON.parse(localStorage.getItem('rbm_user') || '{}');
+      if (!userData.phone) {
+        window.location.href = '../index.html';
+        return;
+      }
+      
+      loadUserData();
+    });
+  </script>
+</body>
+</html>
