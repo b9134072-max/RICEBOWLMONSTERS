@@ -10,15 +10,14 @@
   <style>
     body { font-family: 'Inter', sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
     .app-container { width: 100%; max-width: 480px; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
-    .app-header { display: flex; align-items: center; padding: 16px; background-color: #075E54; color: white; } /* Warna Hijau Tua */
+    .app-header { display: flex; align-items: center; padding: 16px; background-color: #075E54; color: white; }
     .page-title { font-size: 20px; font-weight: 600; margin: 0; }
     .content { padding: 24px; }
     .scanner-container { text-align: center; }
     .scanner-title { font-size: 18px; font-weight: 600; margin-top: 0; margin-bottom: 8px; }
     .scanner-subtitle { font-size: 14px; color: #666; margin-top: 0; margin-bottom: 24px; }
     #reader { border: 2px dashed #ccc; border-radius: 8px; overflow: hidden; width: 100%; max-width: 300px; aspect-ratio: 1 / 1; margin: 0 auto; }
-    .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; background-color: #128C7E; color: white; } /* Warna Hijau Terang */
-    /* BARU: Style untuk tombol unggah */
+    .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; background-color: #128C7E; color: white; }
     .btn-secondary { background-color: #ECE5DD; color: #075E54; margin-top: 12px; }
     .separator { font-size: 14px; color: #888; margin: 16px 0; }
     .validation-result { text-align: center; padding: 30px; border: 2px solid #25D366; background-color: #e8f5e9; border-radius: 8px; }
@@ -39,11 +38,9 @@
         <p class="scanner-subtitle">Arahkan kamera ke QR code atau unggah gambar.</p>
         <div id="reader"></div>
         <button id="start-scan-btn" class="btn">📷 Pindai dengan Kamera</button>
-        
         <p class="separator">atau</p>
         <button id="upload-btn" class="btn btn-secondary">🖼️ Unggah Gambar QR</button>
         <input type="file" id="qr-input-file" accept="image/*" style="display: none;">
-
       </section>
     </main>
   </div>
@@ -52,51 +49,33 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      
-      const startButton = document.getElementById('start-scan-btn');
       const mainContent = document.getElementById('main-content');
-      const scannerContainer = document.getElementById('scanner-container'); // BARU
-      
-      // --- BARU: Elemen untuk fitur unggah gambar ---
+      const startButton = document.getElementById('start-scan-btn');
       const uploadButton = document.getElementById('upload-btn');
       const fileInput = document.getElementById('qr-input-file');
-      // -------------------------------------------
+      let html5QrCode = new Html5Qrcode("reader");
 
-      let html5QrCode;
-
-      /**
-       * Fungsi ini dijalankan ketika QR code berhasil dipindai (dari kamera atau file).
-       */
       function onScanSuccess(decodedText, decodedResult) {
         console.log(`Data klaim diterima = ${decodedText}`);
         
-        // Hentikan proses scanning jika sedang berjalan
         if (html5QrCode && html5QrCode.isScanning) {
           html5QrCode.stop().catch(err => console.error("Gagal menghentikan scanner:", err));
         }
 
         try {
-          // Ubah data dari QR code menjadi objek
           const claimData = JSON.parse(decodedText);
           
-          // Pastikan data yang diterima adalah data klaim yang valid
           if (claimData.claimId && claimData.itemName && claimData.userPhone) {
-            
-            // Tampilkan hasil validasi kepada kasir
             mainContent.innerHTML = `
               <div class="validation-result">
                 <h3>✅ Validasi Berhasil</h3>
                 <p>Nama Hadiah: <strong>${claimData.itemName}</strong></p>
                 <p>Nomor Pelanggan: <strong>${claimData.userPhone}</strong></p>
                 <p>Waktu Klaim: <strong>${claimData.claimTime}</strong></p>
-                <button onclick="window.location.reload()" class="btn">Scan Berikutnya</button>
+                <button onclick="window.location.reload()" class="btn">✅ Sudah Diklaim</button>
               </div>
             `;
-            // Di dunia nyata, Anda akan mengirim `claimData.claimId` ini ke server Anda
-            // untuk mencatat bahwa voucher ini sudah benar-benar digunakan.
-
           } else {
-            // Jika isi QR code tidak sesuai format
             handleScanError('Format QR Code Klaim Tidak Valid.');
           }
         } catch (error) {
@@ -105,29 +84,16 @@
         }
       }
 
-      function onScanFailure(error) {
-        // Biarkan kosong agar tidak menampilkan pesan error terus-menerus saat kamera aktif
-      }
+      function onScanFailure(error) { /* Biarkan kosong */ }
       
-      /**
-       * BARU: Fungsi untuk menangani error dan memuat ulang halaman
-       */
       function handleScanError(message) {
-          alert(message);
-          window.location.reload();
+        alert(message);
+        window.location.reload();
       }
 
-      // Inisialisasi scanner
-      html5QrCode = new Html5Qrcode("reader");
-
-      // Event listener untuk tombol 'Pindai dengan Kamera'
       startButton.addEventListener('click', () => {
-        // Sembunyikan semua tombol dan teks awal
-        scannerContainer.innerHTML = '<div id="reader"></div><p>Arahkan kamera ke QR Code...</p>';
-        
+        document.getElementById('scanner-container').innerHTML = '<div id="reader"></div><p>Arahkan kamera ke QR Code...</p>';
         const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-        
-        // Memulai kamera
         html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
           .catch(err => {
             alert("Gagal memulai kamera. Pastikan Anda memberikan izin akses kamera.");
@@ -135,33 +101,22 @@
           });
       });
 
-      // --- BARU: Logika untuk fitur unggah gambar ---
+      uploadButton.addEventListener('click', () => fileInput.click());
+      
+      fileInput.addEventListener('change', async (e) => {
+        if (e.target.files.length === 0) return;
 
-      // Event listener untuk tombol 'Unggah Gambar QR'
-      uploadButton.addEventListener('click', () => {
-          // Memicu klik pada input file yang tersembunyi
-          fileInput.click();
+        const imageFile = e.target.files[0];
+        document.getElementById('scanner-container').innerHTML = `<p>Memproses gambar...</p>`;
+
+        try {
+          const decodedText = await html5QrCode.scanFile(imageFile, false);
+          onScanSuccess(decodedText);
+        } catch (err) {
+          console.error(`Error saat memindai file: ${err}`);
+          handleScanError('Gagal menemukan QR Code pada gambar yang diunggah.');
+        }
       });
-
-      // Event listener ketika pengguna sudah memilih file
-      fileInput.addEventListener('change', e => {
-          if (e.target.files.length === 0) {
-              return; // Pengguna tidak memilih file
-          }
-          const imageFile = e.target.files[0];
-
-          // Tampilkan pesan "memproses"
-          scannerContainer.innerHTML = `<p>Memproses gambar, harap tunggu...</p>`;
-          
-          // Pindai file gambar yang dipilih
-          html5QrCode.scanFile(imageFile, true)
-              .then(onScanSuccess) // Jika berhasil, panggil fungsi onScanSuccess
-              .catch(err => {
-                  console.error(`Error saat memindai file: ${err}`);
-                  handleScanError('Gagal menemukan QR Code pada gambar yang diunggah.');
-              });
-      });
-      // ----------------------------------------------
     });
   </script>
 </body>
